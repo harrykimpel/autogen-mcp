@@ -6,6 +6,7 @@ from typing import Any, Dict, List, cast
 
 import httpx
 import streamlit as st
+import newrelic.agent
 
 DEFAULT_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://localhost:8080")
 HEALTH_ENDPOINT = "/health"
@@ -14,7 +15,7 @@ CHAT_ENDPOINT = "/chat"
 
 @st.cache_resource(show_spinner=False)
 def _get_client() -> httpx.Client:
-    return httpx.Client(timeout=httpx.Timeout(10.0))
+    return httpx.Client(timeout=httpx.Timeout(1000.0))
 
 
 def ping_server(base_url: str) -> bool:
@@ -88,10 +89,11 @@ def render_chat(base_url: str) -> None:
                 except httpx.HTTPError as exc:
                     error_message = f"Request failed: {exc}"
                     response_placeholder.error(error_message)
-                    chat_history.append({"role": "assistant", "content": error_message})
+                    chat_history.append(
+                        {"role": "assistant", "content": error_message})
                 else:
                     answer = payload.get("response", "(no response)")
-                    
+
                     # Handle MCP-style content blocks if they weren't cleaned server-side
                     if isinstance(answer, str) and answer.startswith('[{"type":'):
                         try:
@@ -102,15 +104,21 @@ def render_chat(base_url: str) -> None:
                                     for block in blocks
                                     if isinstance(block, dict) and block.get("type") == "text"
                                 ]
-                                answer = "".join(text_parts) if text_parts else answer
+                                answer = "".join(
+                                    text_parts) if text_parts else answer
                         except Exception:
                             pass  # Keep original answer if parsing fails
-                    
+
                     response_placeholder.markdown(answer)
-                    chat_history.append({"role": "assistant", "content": answer})
+                    chat_history.append(
+                        {"role": "assistant", "content": answer})
 
 
 def main() -> None:
+    # Initialize New Relic Python Agent
+    newrelic.agent.initialize("newrelic.ini")
+    newrelic.agent.register_application(timeout=10)
+
     base_url = render_sidebar()
     render_chat(base_url)
 

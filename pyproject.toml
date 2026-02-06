@@ -1,15 +1,15 @@
 [project]
-name = "mcp-testingt"
+name = "autogen-mcp-testing"
 version = "0.0.1"
 description = "A simple MCP server exposing a customizable prompt"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "New Relic" }]
 maintainers = [
-    { name = "Josh B.", email = "jbonczkowski@newrelic.com" },
+    { name = "Harry Kimpel", email = "hkimpel@newrelic.com" },
 ]
 keywords = ["mcp", "llm", "automation", "web", "fetch"]
-license = { text = "unlisted" }
+license = "MIT"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -18,23 +18,24 @@ classifiers = [
 ]
 dependencies = [
     "anyio>=4.5",
-    "autogen-agentchat>=0.5.7",
-    "autogen-ext[mcp,openai]>=0.5.7",
+    "autogen>=0.7.5",
+    "autogen-agentchat>=0.7.5",
+    "autogen-ext[mcp,openai]>=0.7.5",
     "click>=8.1.0",
     "dotenv>=0.9.9",
     "fastapi>=0.115.12",
-    "fastmcp>=2.1.2",
+    "fastmcp>=2.14.5",
     "httpx>=0.27",
     "mcp",
-    "newrelic>=10.9.0",
-    "openai>=1.74.0",
+    "newrelic>=11.4.0",
+    "openai>=2.17.0",
     "streamlit>=1.40.0",
     "requests>=2.32.0",
 ]
 
 [project.scripts]
 mcp-test-server = "server.main:main"
-mcp-test-client = "client.client:main"
+mcp-test-client = "client.main:main"
 mcp-test-tools = "tools.main:main"
 run-all = "run_all:main"
 
